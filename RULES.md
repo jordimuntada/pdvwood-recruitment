@@ -70,6 +70,16 @@
 - Documentació interna pot estar en català o anglès
 - Noms de variables i funcions en anglès (estàndard de codi)
 
+### 10. Regles de Dependències i Build
+- Les devDependencies són necessàries al build (TypeScript, Tailwind, ESLint)
+- **No definir `NODE_ENV=production`** com a variable d'entorn en entorns de build:
+  fa que `npm install` ometi les devDependencies i trenca els alias `@/*`
+- Mantenir `.npmrc` amb `include=dev` per garantir la instal·lació completa
+- Verificar `npm run build` localment abans de fer push
+- Els clients de serveis externs (Supabase, Twilio) s'han d'inicialitzar de forma
+  **lazy** (dins d'una funció), mai a nivell de mòdul, perquè el build no falli
+  quan falten variables d'entorn
+
 ## Llista de Verificació de Revisió
 
 Abans de fusionar qualsevol codi:

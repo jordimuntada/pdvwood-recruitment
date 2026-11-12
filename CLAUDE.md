@@ -52,6 +52,32 @@
 - [ ] Panell d'administració
 - [ ] Sistema de correu electrònic per candidats
 
+## Desplegament
+
+### Repositori i URLs
+- **GitHub**: https://github.com/jordimuntada/pdvwood-recruitment (públic, branca `main`)
+- **Render**: https://pdvwood-careers.onrender.com
+- **Servei Render**: `pdvwood-careers` (ID `srv-dbqqt73tqb8s73bpefgg`, workspace `tea-cvr4hgre5dus7385i37g`)
+- **Regió**: Frankfurt · **Pla**: free · **Auto-deploy**: activat en cada push a `main`
+- **Domini objectiu**: `careers.pdvwood.com` (pendent de configurar DNS)
+
+### Configura al Render
+- **Build Command**: `npm install && npm run build`
+- **Start Command**: `npm start`
+- **Runtime**: Node
+
+### ⚠️ No definir `NODE_ENV=production` com a variable d'entorn
+Si es defineix manualment, `npm install` **omet les devDependencies** i Next.js no pot
+llegir els alias `@/*` del `tsconfig.json` → el build falla amb
+`Module not found: Can't resolve '@/components/...'`.
+El fitxer `.npmrc` inclou `include=dev` com a xarxa de seguretat.
+
+### Variables d'entorn pendents de configurar
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `N8N_WEBHOOK_URL`.
+Estan buides: el lloc es mostra correctament, però l'enviament del formulari i la
+verificació de telèfon fallaran fins que s'omplin.
+
 ## Notes
 - Aquest fitxer s'ha d'actualitzar quan s'afegeixin noves funcionalitats
 - Documentar qualsevol convenció específica del projecte a sota

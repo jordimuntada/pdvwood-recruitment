@@ -48,6 +48,17 @@ npm run build
 npm start
 ```
 
+### Desplegament
+```bash
+# El push a main desplega automàticament a Render
+git push origin main
+```
+
+- Repositori: https://github.com/jordimuntada/pdvwood-recruitment
+- Producció: https://pdvwood-careers.onrender.com
+- Dashboard: https://dashboard.render.com/web/srv-dbqqt73tqb8s73bpefgg
+- **Mai** definir `NODE_ENV=production` com a env var al Render (trenca el build)
+
 ## Flux de Treball
 
 1. **Abans de començar**: Llegir CLAUDE.md i RULES.md
