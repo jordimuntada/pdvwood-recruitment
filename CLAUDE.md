@@ -73,10 +73,15 @@ llegir els alias `@/*` del `tsconfig.json` → el build falla amb
 El fitxer `.npmrc` inclou `include=dev` com a xarxa de seguretat.
 
 ### Variables d'entorn pendents de configurar
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+Supabase **ja està configurat** al Render. Falten:
 `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `N8N_WEBHOOK_URL`.
-Estan buides: el lloc es mostra correctament, però l'enviament del formulari i la
-verificació de telèfon fallaran fins que s'omplin.
+
+### Supabase
+- **Projecte**: PDVWOOD.IN · ref `gerrcbypvofvfpaioihc` · regió `eu-west-1`
+- **Taula**: `candidates` (columnes `snake_case`, RLS activat)
+- **Bucket**: `candidate-cvs` (privat, URLs signades de 7 dies)
+- Els INSERTs i pujades de CVs utilitzen el client `service_role` (byPassa RLS)
+- `lib/supabase.ts` mapeja `camelCase` (codi) → `snake_case` (BD)
 
 ## Notes
 - Aquest fitxer s'ha d'actualitzar quan s'afegeixin noves funcionalitats

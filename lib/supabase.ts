@@ -45,9 +45,15 @@ export async function uploadCV(file: File, candidateId: string): Promise<string>
     throw new Error(`No s'ha pogut pujar el CV: ${uploadError.message}`)
   }
 
-  const { data } = admin.storage.from('candidate-cvs').getPublicUrl(filePath)
+  const { data: signed, error: signedError } = await admin.storage
+    .from('candidate-cvs')
+    .createSignedUrl(filePath, 60 * 60 * 24 * 7)
 
-  return data.publicUrl
+  if (signedError || !signed) {
+    return filePath
+  }
+
+  return signed.signedUrl
 }
 
 export async function saveCandidate(data: {
@@ -62,9 +68,22 @@ export async function saveCandidate(data: {
   motivation: string
   cvUrl: string
 }) {
-  const { data: candidate, error } = await getSupabase()
+  const row = {
+    position_id: data.positionId,
+    position_title: data.positionTitle,
+    first_name: data.firstName,
+    last_name: data.lastName,
+    email: data.email,
+    phone: data.phone,
+    postal_code: data.postalCode,
+    experience: data.experience,
+    motivation: data.motivation,
+    cv_url: data.cvUrl,
+  }
+
+  const { data: candidate, error } = await getSupabaseAdmin()
     .from('candidates')
-    .insert([data])
+    .insert([row])
     .select()
     .single()
 

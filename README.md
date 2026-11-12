@@ -83,11 +83,13 @@ CREATE INDEX idx_candidates_email ON candidates(email);
 CREATE INDEX idx_candidates_submitted_at ON candidates(submitted_at DESC);
 ```
 
-Crea també un bucket **privat** anomenat `candidate-cvs`.
+Crea també un bucket **privat** anomenat `candidate-cvs`. Els CVs s'accedeixen amb
+URLs signades (7 dies de validesa) que s'envien al webhook de n8n.
 
-> Nota: els noms de columnes de la taula són `snake_case`, mentre que el codi envia
-> els camps en `camelCase`. O bé ajusta el mapping a `lib/supabase.ts`, o bé anomena
-> les columnes en `camelCase` per fer-les coincidir.
+## Projecte Supabase
+
+- **Projecte**: PDVWOOD.IN (`gerrcbypvofvfpaioihc`) · regió `eu-west-1`
+- **URL API**: https://gerrcbypvofvfpaioihc.supabase.co
 
 ## n8n
 
