@@ -13,7 +13,7 @@ export default function Home() {
               Construeix la Teva Carrera Amb Nosaltres
             </h1>
             <p className="text-lg text-gray-600">
-              Uneix-te a PDVWood i forma part d'un equip que crea excel·lència en cada peça de fusta.
+              Uneix-te a PDVWood i forma part d&apos;un equip que crea excel·lència en cada peça de fusta.
             </p>
           </div>
           <PositionList />

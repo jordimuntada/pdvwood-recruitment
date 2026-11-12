@@ -1,18 +1,43 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+let _supabase: SupabaseClient | null = null
+let _supabaseAdmin: SupabaseClient | null = null
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+function requireEnv(name: string): string {
+  const value = process.env[name]
+  if (!value) {
+    throw new Error(`Variable d'entorn no configurada: ${name}`)
+  }
+  return value
+}
+
+export function getSupabase(): SupabaseClient {
+  if (!_supabase) {
+    _supabase = createClient(
+      requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
+      requireEnv('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    )
+  }
+  return _supabase
+}
+
+export function getSupabaseAdmin(): SupabaseClient {
+  if (!_supabaseAdmin) {
+    _supabaseAdmin = createClient(
+      requireEnv('NEXT_PUBLIC_SUPABASE_URL'),
+      requireEnv('SUPABASE_SERVICE_ROLE_KEY')
+    )
+  }
+  return _supabaseAdmin
+}
 
 export async function uploadCV(file: File, candidateId: string): Promise<string> {
+  const admin = getSupabaseAdmin()
   const fileExt = file.name.split('.').pop()
   const fileName = `${candidateId}/${Date.now()}.${fileExt}`
   const filePath = `cvs/${fileName}`
 
-  const { error: uploadError } = await supabaseAdmin.storage
+  const { error: uploadError } = await admin.storage
     .from('candidate-cvs')
     .upload(filePath, file)
 
@@ -20,9 +45,7 @@ export async function uploadCV(file: File, candidateId: string): Promise<string>
     throw new Error(`No s'ha pogut pujar el CV: ${uploadError.message}`)
   }
 
-  const { data } = supabaseAdmin.storage
-    .from('candidate-cvs')
-    .getPublicUrl(filePath)
+  const { data } = admin.storage.from('candidate-cvs').getPublicUrl(filePath)
 
   return data.publicUrl
 }
@@ -39,7 +62,7 @@ export async function saveCandidate(data: {
   motivation: string
   cvUrl: string
 }) {
-  const { data: candidate, error } = await supabase
+  const { data: candidate, error } = await getSupabase()
     .from('candidates')
     .insert([data])
     .select()

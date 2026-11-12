@@ -230,7 +230,7 @@ export function ApplicationForm({ positionId, positionTitle }: ApplicationFormPr
 
       {submitStatus === 'error' && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          ✗ L'enviament ha fallat. Si us plau, torna-ho a intentar o contacta'ns directament.
+          ✗ L&apos;enviament ha fallat. Si us plau, torna-ho a intentar o contacta&apos;ns directament.
         </div>
       )}
     </form>
