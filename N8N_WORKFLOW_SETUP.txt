@@ -1,0 +1,158 @@
+# Configuració del Flux de Treball N8N per PDVWood Recruitment
+
+## Visió General
+Aquest flux captura sol·licituds de candidats del lloc web de carreres de PDVWood i les processa a través de Supabase i notificacions per correu electrònic.
+
+## Estructura del Flux de Treball
+
+### 1. Trigger Webhook
+- **Tipus de Node**: Webhook
+- **Mètode**: POST
+- **Ruta**: `/webhook/pdvwood-candidates`
+- **Mode de Resposta**: Últim Node
+- **Codi de Resposta**: 200
+
+### 2. Node d'Inserció a Supabase
+- **Tipus de Node**: Supabase
+- **Operació**: Insert
+- **Taula**: `candidates`
+- **Mapeig de Dades**:
+  ```json
+  {
+    "position_id": "={{ $json.positionId }}",
+    "position_title": "={{ $json.positionTitle }}",
+    "first_name": "={{ $json.firstName }}",
+    "last_name": "={{ $json.lastName }}",
+    "email": "={{ $json.email }}",
+    "phone": "={{ $json.phone }}",
+    "postal_code": "={{ $json.postalCode }}",
+    "experience": "={{ $json.experience }}",
+    "motivation": "={{ $json.motivation }}",
+    "cv_url": "={{ $json.cvUrl }}",
+    "submitted_at": "={{ $json.submittedAt }}"
+  }
+  ```
+
+### 3. Node de Notificació per Correu Electrònic
+- **Tipus de Node**: Email Send (Gmail/SMTP)
+- **Per a**: hr@pdvwood.com (o el teu correu de RRHH)
+- **Assumpte**: `Nova Sol·licitud de Candidat: {{ $json.firstName }} {{ $json.lastName }} - {{ $json.positionTitle }}`
+- **Cos**:
+  ```
+  Nova sol·licitud rebuda!
+  
+  Posició: {{ $json.positionTitle }}
+  Nom: {{ $json.firstName }} {{ $json.lastName }}
+  Correu: {{ $json.email }}
+  Telèfon: {{ $json.phone }}
+  Ubicació: {{ $json.postalCode }}
+  
+  Experiència:
+  {{ $json.experience }}
+  
+  Motivació:
+  {{ $json.motivation }}
+  
+  CV: {{ $json.cvUrl }}
+  ```
+
+### 4. Node de Resposta
+- **Tipus de Node**: Respond to Webhook
+- **Cos de Resposta**:
+  ```json
+  {
+    "success": true,
+    "message": "Sol·licitud rebuda"
+  }
+  ```
+
+## Esquema de la Taula Supabase
+
+Crea aquesta taula a la teva base de dades Supabase:
+
+```sql
+CREATE TABLE candidates (
+  id BIGSERIAL PRIMARY KEY,
+  position_id TEXT NOT NULL,
+  position_title TEXT NOT NULL,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  postal_code TEXT NOT NULL,
+  experience TEXT NOT NULL,
+  motivation TEXT NOT NULL,
+  cv_url TEXT NOT NULL,
+  submitted_at TIMESTAMPTZ DEFAULT NOW(),
+  status TEXT DEFAULT 'new'
+);
+
+CREATE INDEX idx_candidates_position ON candidates(position_id);
+CREATE INDEX idx_candidates_email ON candidates(email);
+CREATE INDEX idx_candidates_submitted_at ON candidates(submitted_at DESC);
+```
+
+## Configuració de Supabase Storage
+
+1. Crea un nou bucket d'emmagatzematge anomenat `candidate-cvs`
+2. Configura'l com a **privat** (accessible només amb la clau de rol de servei)
+3. Afegeix una política per permetre pujades autenticades:
+   ```sql
+   CREATE POLICY "Allow service role uploads"
+   ON storage.objects FOR ALL
+   USING (bucket_id = 'candidate-cvs')
+   WITH CHECK (true);
+   ```
+
+## Variables d'Entorn Necessàries a n8n
+
+- `SUPABASE_URL`: URL del teu projecte Supabase
+- `SUPABASE_SERVICE_KEY`: Clau de rol de servei de Supabase
+- `SMTP_HOST`: Host del servidor de correu (per notificacions)
+- `SMTP_USER`: Nom d'usuari del correu
+- `SMTP_PASS`: Contrasenya del correu
+
+## URL del Webhook
+
+Després de crear el flux de treball, n8n proporcionarà una URL de webhook com:
+```
+https://el-teu-domini-n8n.com/webhook/pdvwood-candidates
+```
+
+Copia aquesta URL i afegeix-la al teu fitxer `.env.local`:
+```
+N8N_WEBHOOK_URL=https://el-teu-domini-n8n.com/webhook/pdvwood-candidates
+```
+
+## Provar el Flux de Treball
+
+1. Activa el flux de treball a n8n
+2. Envia una sol·licitud de prova des del lloc web de carreres
+3. Comprova les execucions de n8n per veure si les dades flueixen correctament
+4. Verifica que el candidat apareix a Supabase
+5. Comprova si s'ha enviat la notificació per correu
+
+## Gestió d'Errors
+
+Afegeix un flux d'errors a n8n:
+- **Trigger**: Error Trigger
+- **Acció**: Enviar correu a admin@pdvwood.com amb detalls de l'error
+
+## Millores Opcionals
+
+### Afegir Notificació SMS (Twilio)
+- Afegeix un node Twilio després de la inserció a Supabase
+- Enviar SMS a RRHH quan arribi una nova sol·licitud
+
+### Afegir Correu de Resposta Automàtica
+- Enviar correu de confirmació al candidat
+- Utilitzar el seu correu de les dades del webhook
+
+### Afegir a CRM
+- Si utilitzes un CRM, afegeix nodes per crear contacte/lead
+- Mapejar dades del candidat als camps del CRM
+
+### Filtrar per Posició
+- Afegir nodes de filtre per posició específica
+- Enviar notificacions diferents segons la posició
+- Assignar a reclutadors diferents segons la posició

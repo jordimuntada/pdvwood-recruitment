@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pdv-primary: #8B4513;
+  --pdv-secondary: #D2691E;
+  --pdv-accent: #DEB887;
+  --pdv-dark: #2C1810;
+  --pdv-light: #FAF0E6;
+}
+
+body {
+  background: linear-gradient(to bottom, #FAF0E6 0%, #FFFFFF 100%);
+}
+
+.pdv-gradient {
+  background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+}
+
+.pdv-text-gradient {
+  background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
