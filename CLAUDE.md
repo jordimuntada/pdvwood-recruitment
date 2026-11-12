@@ -73,8 +73,14 @@ llegir els alias `@/*` del `tsconfig.json` → el build falla amb
 El fitxer `.npmrc` inclou `include=dev` com a xarxa de seguretat.
 
 ### Variables d'entorn pendents de configurar
-Supabase **ja està configurat** al Render. Falten:
-`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`, `N8N_WEBHOOK_URL`.
+Supabase i n8n **ja estan configurats** al Render. Falten:
+`TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`.
+
+### n8n
+- **Webhook actual (TEST)**: `https://n8n.futurebenefits.me/webhook-test/ca66ff21-d5a2-4d32-9d36-ebe9cb261872`
+- ⚠️ Els URLs `/webhook-test/` només responen quan el workflow està escoltant en mode test.
+- Per producció: canviar `N8N_WEBHOOK_URL` a l'URL `/webhook/...` (sense `-test`)
+  i **activar** el workflow a n8n.
 
 ### Supabase
 - **Projecte**: PDVWOOD.IN · ref `gerrcbypvofvfpaioihc` · regió `eu-west-1`
